@@ -5,6 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* --- shadcn semantic tokens --- */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -23,6 +24,21 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  /* --- app brand tokens --- */
+  --color-nav-bg: var(--nav-bg);
+  --color-nav-hover: var(--nav-hover);
+  --color-nav-active: var(--nav-active);
+  --color-nav-mobile: var(--nav-mobile);
+  --color-nav-mobile-active: var(--nav-mobile-active);
+  --color-nav-text: var(--nav-text);
+  --color-nav-text-muted: var(--nav-text-muted);
+  --color-nav-text-dim: var(--nav-text-dim);
+  --color-banner-bg: var(--banner-bg);
+  --color-banner-border: var(--banner-border);
+  --color-banner-heading: var(--banner-heading);
+  --color-banner-text: var(--banner-text);
+  --color-surface: var(--surface);
+  /* --- radii / fonts --- */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -32,7 +48,8 @@
 
 @layer base {
   :root {
-    --background: oklch(1 0 0);
+    /* shadcn base tokens — light */
+    --background: oklch(0.98 0 0);
     --foreground: oklch(0.145 0 0);
     --card: oklch(1 0 0);
     --card-foreground: oklch(0.145 0 0);
@@ -59,15 +76,32 @@
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
+
+    /* app brand tokens — light */
+    --surface: oklch(0.96 0 0);              /* gray-100 equivalent */
+    --nav-bg: oklch(0.43 0.18 263.4);        /* blue-700 */
+    --nav-hover: oklch(0.52 0.20 263.4);     /* blue-600 */
+    --nav-active: oklch(0.37 0.16 263.4);    /* blue-800 */
+    --nav-mobile: oklch(0.37 0.16 263.4);    /* blue-800 */
+    --nav-mobile-active: oklch(0.30 0.14 263.4); /* blue-900 */
+    --nav-text: oklch(1 0 0);                /* white */
+    --nav-text-muted: oklch(0.83 0.07 263.4); /* blue-200 */
+    --nav-text-dim: oklch(0.71 0.10 263.4);  /* blue-300 */
+    --banner-bg: oklch(0.97 0.02 263.4);     /* blue-50 */
+    --banner-border: oklch(0.87 0.06 263.4); /* blue-200 */
+    --banner-heading: oklch(0.27 0.13 263.4); /* blue-900 */
+    --banner-text: oklch(0.44 0.19 263.4);   /* blue-700 */
   }
+
   .dark {
+    /* shadcn base tokens — dark */
     --background: oklch(0.145 0 0);
     --foreground: oklch(0.985 0 0);
     --card: oklch(0.205 0 0);
     --card-foreground: oklch(0.985 0 0);
     --popover: oklch(0.205 0 0);
     --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.7 0.18 248);
+    --primary: oklch(0.65 0.18 248);
     --primary-foreground: oklch(0.1 0 0);
     --secondary: oklch(0.269 0 0);
     --secondary-foreground: oklch(0.985 0 0);
@@ -87,7 +121,23 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
+
+    /* app brand tokens — dark */
+    --surface: oklch(0.22 0 0);
+    --nav-bg: oklch(0.18 0.08 248);
+    --nav-hover: oklch(0.28 0.10 248);
+    --nav-active: oklch(0.14 0.07 248);
+    --nav-mobile: oklch(0.14 0.07 248);
+    --nav-mobile-active: oklch(0.11 0.06 248);
+    --nav-text: oklch(0.985 0 0);
+    --nav-text-muted: oklch(0.68 0.07 248);
+    --nav-text-dim: oklch(0.58 0.09 248);
+    --banner-bg: oklch(0.21 0.05 248);
+    --banner-border: oklch(0.33 0.08 248);
+    --banner-heading: oklch(0.78 0.12 248);
+    --banner-text: oklch(0.68 0.14 248);
   }
+
   * {
     @apply border-border outline-ring/50;
   }

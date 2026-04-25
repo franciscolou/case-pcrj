@@ -1,4 +1,5 @@
 'use client'
+import { useTheme } from 'next-themes'
 import {
   BarChart,
   Bar,
@@ -23,14 +24,6 @@ interface ChartsTabProps {
   data: Summary
 }
 
-const BAIRRO_COLORS: Record<string, string> = {
-  Rocinha: '#3b82f6',
-  Maré: '#8b5cf6',
-  Jacarezinho: '#f59e0b',
-  'Complexo do Alemão': '#ef4444',
-  Mangueira: '#10b981',
-}
-
 const ALERT_COLORS = ['#ef4444', '#f59e0b', '#f97316']
 
 function shortBairro(b: string) {
@@ -39,6 +32,24 @@ function shortBairro(b: string) {
 }
 
 export function ChartsTab({ data }: ChartsTabProps) {
+  const { resolvedTheme } = useTheme()
+  const dark = resolvedTheme === 'dark'
+
+  // Chart palette — all color decisions live here, components reference these vars
+  const colors = {
+    tickText: dark ? '#9ca3af' : '#4b5563',
+    grid: dark ? '#374151' : '#f0f0f0',
+    polarGrid: dark ? '#374151' : '#e5e7eb',
+    tooltipBg: dark ? '#1f2937' : '#ffffff',
+    tooltipBorder: dark ? '#374151' : '#e5e7eb',
+    tooltipText: dark ? '#f9fafb' : '#111827',
+    legendText: dark ? '#d1d5db' : '#374151',
+    barGreen: dark ? '#4ade80' : '#86efac',
+    barRed: dark ? '#f87171' : '#f87171',
+    radarStroke: '#ef4444',
+    radarFill: '#ef4444',
+  }
+
   const bairroData = Object.entries(data.por_bairro)
     .sort((a, b) => b[1].total - a[1].total)
     .map(([bairro, stats]) => ({
@@ -47,7 +58,6 @@ export function ChartsTab({ data }: ChartsTabProps) {
       total: stats.total,
       comAlertas: stats.com_alertas,
       semAlertas: stats.total - stats.com_alertas,
-      taxaAlerta: stats.total > 0 ? Math.round((stats.com_alertas / stats.total) * 100) : 0,
     }))
 
   const alertTypeData = [
@@ -59,42 +69,49 @@ export function ChartsTab({ data }: ChartsTabProps) {
   const reviewData = [
     { name: 'Revisadas', value: data.revisadas, color: '#10b981' },
     { name: 'Pendentes', value: data.total - data.revisadas - data.sem_dados, color: '#f59e0b' },
-    { name: 'Sem dados', value: data.sem_dados, color: '#d1d5db' },
+    { name: 'Sem dados', value: data.sem_dados, color: dark ? '#4b5563' : '#d1d5db' },
   ].filter((d) => d.value > 0)
 
   const radarData = Object.entries(data.por_bairro).map(([bairro, stats]) => ({
     bairro: shortBairro(bairro),
     'Taxa de alerta (%)': stats.total > 0 ? Math.round((stats.com_alertas / stats.total) * 100) : 0,
-    'Total de crianças': stats.total,
   }))
+
+  const tooltipStyle = {
+    fontSize: 12,
+    borderRadius: 8,
+    backgroundColor: colors.tooltipBg,
+    border: `1px solid ${colors.tooltipBorder}`,
+    color: colors.tooltipText,
+  }
 
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-semibold text-gray-800">
+            <CardTitle className="text-base font-semibold text-foreground">
               Crianças por Bairro
             </CardTitle>
-            <p className="text-xs text-gray-600">Total e percentual com alertas ativos</p>
+            <p className="text-xs text-muted-foreground">Total e percentual com alertas ativos</p>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={bairroData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="bairro" tick={{ fontSize: 11, fill: '#4b5563' }} />
-                <YAxis tick={{ fontSize: 11, fill: '#4b5563' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
+                <XAxis dataKey="bairro" tick={{ fontSize: 11, fill: colors.tickText }} />
+                <YAxis tick={{ fontSize: 11, fill: colors.tickText }} />
                 <Tooltip
                   formatter={(value, name) => [value, name === 'semAlertas' ? 'Sem alertas' : 'Com alertas']}
                   labelFormatter={(label) => bairroData.find((d) => d.bairro === label)?.bairroFull ?? label}
-                  contentStyle={{ fontSize: 12, borderRadius: 8 }}
+                  contentStyle={tooltipStyle}
                 />
                 <Legend
                   formatter={(value) => (value === 'semAlertas' ? 'Sem alertas' : 'Com alertas')}
-                  wrapperStyle={{ fontSize: 12 }}
+                  wrapperStyle={{ fontSize: 12, color: colors.legendText }}
                 />
-                <Bar dataKey="semAlertas" stackId="a" fill="#86efac" radius={[0, 0, 4, 4]} />
-                <Bar dataKey="comAlertas" stackId="a" fill="#f87171" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="semAlertas" stackId="a" fill={colors.barGreen} radius={[0, 0, 4, 4]} />
+                <Bar dataKey="comAlertas" stackId="a" fill={colors.barRed} radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -102,10 +119,10 @@ export function ChartsTab({ data }: ChartsTabProps) {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-semibold text-gray-800">
+            <CardTitle className="text-base font-semibold text-foreground">
               Distribuição de Alertas por Área
             </CardTitle>
-            <p className="text-xs text-gray-600">Quantidade de crianças com alerta em cada área</p>
+            <p className="text-xs text-muted-foreground">Quantidade de crianças com alerta em cada área</p>
           </CardHeader>
           <CardContent className="flex items-center justify-center">
             <ResponsiveContainer width="100%" height={220}>
@@ -127,7 +144,7 @@ export function ChartsTab({ data }: ChartsTabProps) {
                 </Pie>
                 <Tooltip
                   formatter={(value, name) => [`${value} crianças`, name]}
-                  contentStyle={{ fontSize: 12, borderRadius: 8 }}
+                  contentStyle={tooltipStyle}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -136,10 +153,10 @@ export function ChartsTab({ data }: ChartsTabProps) {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-semibold text-gray-800">
+            <CardTitle className="text-base font-semibold text-foreground">
               Status de Revisão
             </CardTitle>
-            <p className="text-xs text-gray-600">Proporção de fichas revisadas pelos técnicos</p>
+            <p className="text-xs text-muted-foreground">Proporção de fichas revisadas pelos técnicos</p>
           </CardHeader>
           <CardContent className="flex items-center justify-center">
             <ResponsiveContainer width="100%" height={220}>
@@ -161,7 +178,7 @@ export function ChartsTab({ data }: ChartsTabProps) {
                 </Pie>
                 <Tooltip
                   formatter={(value, name) => [`${value} crianças`, name]}
-                  contentStyle={{ fontSize: 12, borderRadius: 8 }}
+                  contentStyle={tooltipStyle}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -170,25 +187,25 @@ export function ChartsTab({ data }: ChartsTabProps) {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base font-semibold text-gray-800">
+            <CardTitle className="text-base font-semibold text-foreground">
               Vulnerabilidade por Bairro
             </CardTitle>
-            <p className="text-xs text-gray-600">Taxa de alerta (%) e volume de crianças acompanhadas</p>
+            <p className="text-xs text-muted-foreground">Taxa de alerta (%) por comunidade</p>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={220}>
               <RadarChart data={radarData} margin={{ top: 10, right: 30, bottom: 10, left: 30 }}>
-                <PolarGrid stroke="#e5e7eb" />
-                <PolarAngleAxis dataKey="bairro" tick={{ fontSize: 11, fill: '#4b5563' }} />
+                <PolarGrid stroke={colors.polarGrid} />
+                <PolarAngleAxis dataKey="bairro" tick={{ fontSize: 11, fill: colors.tickText }} />
                 <Radar
                   name="Taxa de alerta (%)"
                   dataKey="Taxa de alerta (%)"
-                  stroke="#ef4444"
-                  fill="#ef4444"
+                  stroke={colors.radarStroke}
+                  fill={colors.radarFill}
                   fillOpacity={0.25}
                 />
-                <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8 }} />
-                <Legend wrapperStyle={{ fontSize: 12 }} />
+                <Tooltip contentStyle={tooltipStyle} />
+                <Legend wrapperStyle={{ fontSize: 12, color: colors.legendText }} />
               </RadarChart>
             </ResponsiveContainer>
           </CardContent>

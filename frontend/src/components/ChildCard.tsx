@@ -35,25 +35,25 @@ export function ChildCard({ child }: ChildCardProps) {
       <Card
         className={cn(
           'hover:shadow-md transition-all duration-200 cursor-pointer group py-0 gap-0',
-          hasAlert ? 'ring-red-200' : ''
+          hasAlert ? 'ring-red-200 dark:ring-red-900/50' : ''
         )}
       >
         <CardContent className="p-4">
           <div className="flex items-start justify-between mb-3">
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
+              <h3 className="font-semibold text-foreground truncate group-hover:text-primary transition-colors">
                 {child.nome}
               </h3>
-              <p className="text-xs text-gray-600 mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 {age} {age === 1 ? 'ano' : 'anos'} · {child.bairro}
               </p>
             </div>
             <div className="flex items-center gap-1 ml-2" aria-hidden="true">
               {child.revisado && (
-                <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                <CheckCircle className="w-4 h-4 text-green-500 dark:text-green-400 flex-shrink-0" />
               )}
               {hasAlert && !child.revisado && (
-                <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" />
+                <AlertTriangle className="w-4 h-4 text-red-500 dark:text-red-400 flex-shrink-0" />
               )}
             </div>
           </div>
@@ -85,11 +85,11 @@ export function ChildCard({ child }: ChildCardProps) {
                 <AlertBadge key={alert} alert={alert} />
               ))}
               {extraAlerts > 0 && (
-                <span className="text-xs text-gray-600 self-center">+{extraAlerts} mais</span>
+                <span className="text-xs text-muted-foreground self-center">+{extraAlerts} mais</span>
               )}
             </div>
           ) : (
-            <p className="text-xs text-gray-600 italic" aria-hidden="true">Sem alertas ativos</p>
+            <p className="text-xs text-muted-foreground italic" aria-hidden="true">Sem alertas ativos</p>
           )}
         </CardContent>
       </Card>
@@ -114,10 +114,10 @@ function AreaIndicator({
       className={cn(
         'h-auto rounded-full px-2 py-1 text-xs gap-1 border-transparent font-normal',
         !present
-          ? 'bg-gray-100 text-gray-600 hover:bg-gray-100'
+          ? 'bg-muted text-muted-foreground hover:bg-muted'
           : alert
-            ? 'bg-red-100 text-red-600 hover:bg-red-100'
-            : 'bg-green-100 text-green-600 hover:bg-green-100'
+            ? 'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40'
+            : 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/40'
       )}
     >
       <Icon className="w-3 h-3" aria-hidden="true" />

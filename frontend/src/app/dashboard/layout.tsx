@@ -19,12 +19,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (!checked) {
     return (
       <div
-        className="min-h-screen flex items-center justify-center bg-gray-50"
+        className="min-h-screen flex items-center justify-center bg-background"
         role="status"
         aria-label="Verificando autenticação"
       >
         <div
-          className="h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"
+          className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin"
           aria-hidden="true"
         />
       </div>
@@ -32,7 +32,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <Navbar />
       <main id="main-content" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {children}

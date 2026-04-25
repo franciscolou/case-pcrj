@@ -50,8 +50,8 @@ export default function LoginPage() {
           <p className="text-blue-200 text-sm mt-1">Painel de Acompanhamento Social</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <h2 className="text-gray-800 text-xl font-semibold mb-6" id="login-heading">
+        <div className="bg-card rounded-2xl shadow-xl p-8">
+          <h2 className="text-foreground text-xl font-semibold mb-6" id="login-heading">
             Entrar
           </h2>
 
@@ -62,7 +62,7 @@ export default function LoginPage() {
             noValidate
           >
             <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-gray-700">
+              <Label htmlFor="email" className="text-foreground/80">
                 E-mail
               </Label>
               <Input
@@ -79,7 +79,7 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="password" className="text-gray-700">
+              <Label htmlFor="password" className="text-foreground/80">
                 Senha
               </Label>
               <Input
@@ -96,9 +96,9 @@ export default function LoginPage() {
             </div>
 
             {error && (
-              <Alert variant="destructive" className="bg-red-50 border-red-200 py-2">
-                <AlertCircle className="h-4 w-4 text-red-600" aria-hidden="true" />
-                <AlertDescription className="text-red-700">{error}</AlertDescription>
+              <Alert variant="destructive" className="bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-800 py-2">
+                <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400" aria-hidden="true" />
+                <AlertDescription className="text-red-700 dark:text-red-300">{error}</AlertDescription>
               </Alert>
             )}
 

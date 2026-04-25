@@ -65,8 +65,8 @@ function ChildrenList() {
   return (
     <div>
       <header className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Crianças</h1>
-        <p className="text-gray-600 text-sm mt-1" aria-live="polite" aria-atomic="true">
+        <h1 className="text-2xl font-bold text-foreground">Crianças</h1>
+        <p className="text-muted-foreground text-sm mt-1" aria-live="polite" aria-atomic="true">
           {totalLabel}
         </p>
       </header>
@@ -74,14 +74,14 @@ function ChildrenList() {
       <Card className="mb-6 py-0 gap-0" role="search" aria-label="Filtros de busca">
         <CardContent className="p-4">
           <div className="flex items-center gap-2 mb-3">
-            <SlidersHorizontal className="w-4 h-4 text-gray-600" aria-hidden="true" />
-            <span className="text-sm font-medium text-gray-700" aria-hidden="true">Filtros</span>
+            <SlidersHorizontal className="w-4 h-4 text-muted-foreground" aria-hidden="true" />
+            <span className="text-sm font-medium text-foreground/80" aria-hidden="true">Filtros</span>
             {hasFilters && (
               <Button
                 variant="link"
                 size="sm"
                 onClick={() => router.replace(pathname)}
-                className="ml-auto h-auto p-0 text-xs text-blue-600"
+                className="ml-auto h-auto p-0 text-xs text-primary"
               >
                 Limpar filtros
               </Button>
@@ -112,7 +112,7 @@ function ChildrenList() {
               </Select>
             </div>
 
-            <div role="group" aria-label="Filtrar por alertas" className="flex gap-1 bg-gray-100 rounded-lg p-1">
+            <div role="group" aria-label="Filtrar por alertas" className="flex gap-1 bg-muted rounded-lg p-1">
               {(
                 [
                   ['', 'Todos'],
@@ -127,8 +127,8 @@ function ChildrenList() {
                   className={cn(
                     'px-3 py-1.5 rounded-md text-xs font-medium transition-colors',
                     alertas === val
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-700 hover:text-gray-900'
+                      ? 'bg-card text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
                   )}
                 >
                   {label}
@@ -136,7 +136,7 @@ function ChildrenList() {
               ))}
             </div>
 
-            <div role="group" aria-label="Filtrar por revisão" className="flex gap-1 bg-gray-100 rounded-lg p-1">
+            <div role="group" aria-label="Filtrar por revisão" className="flex gap-1 bg-muted rounded-lg p-1">
               {(
                 [
                   ['', 'Todos'],
@@ -151,8 +151,8 @@ function ChildrenList() {
                   className={cn(
                     'px-3 py-1.5 rounded-md text-xs font-medium transition-colors',
                     revisado === val
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-700 hover:text-gray-900'
+                      ? 'bg-card text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
                   )}
                 >
                   {label}
@@ -164,9 +164,9 @@ function ChildrenList() {
       </Card>
 
       {isError && (
-        <Alert variant="destructive" className="mb-6 bg-red-50 border-red-200 py-3">
-          <AlertTriangle className="h-4 w-4 text-red-600" aria-hidden="true" />
-          <AlertDescription className="text-red-700">
+        <Alert variant="destructive" className="mb-6 bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-800 py-3">
+          <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400" aria-hidden="true" />
+          <AlertDescription className="text-red-700 dark:text-red-300">
             Erro ao carregar crianças. Tente novamente.
           </AlertDescription>
         </Alert>
@@ -197,9 +197,9 @@ function ChildrenList() {
 
       {!isLoading && data && data.data.length === 0 && (
         <div className="text-center py-16" role="status">
-          <Search className="w-12 h-12 text-gray-300 mx-auto mb-4" aria-hidden="true" />
-          <h2 className="text-gray-700 font-medium">Nenhuma criança encontrada</h2>
-          <p className="text-gray-600 text-sm mt-1">Tente ajustar os filtros</p>
+          <Search className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" aria-hidden="true" />
+          <h2 className="text-foreground font-medium">Nenhuma criança encontrada</h2>
+          <p className="text-muted-foreground text-sm mt-1">Tente ajustar os filtros</p>
         </div>
       )}
 
@@ -222,7 +222,7 @@ function ChildrenList() {
               >
                 <ChevronLeft className="w-4 h-4" aria-hidden="true" />
               </Button>
-              <span className="text-sm text-gray-700" aria-live="polite" aria-atomic="true">
+              <span className="text-sm text-muted-foreground" aria-live="polite" aria-atomic="true">
                 Página {page} de {data.pagination.totalPages}
               </span>
               <Button
@@ -252,7 +252,7 @@ export default function CriancasPage() {
           aria-label="Carregando"
         >
           <div
-            className="h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"
+            className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full animate-spin"
             aria-hidden="true"
           />
         </div>
