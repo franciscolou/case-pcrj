@@ -22,8 +22,16 @@ export function ChildCard({ child }: ChildCardProps) {
   const displayAlerts = allAlerts.slice(0, 3)
   const extraAlerts = allAlerts.length - displayAlerts.length
 
+  const statusLabel = hasAlert
+    ? `, ${allAlerts.length} alerta${allAlerts.length !== 1 ? 's' : ''} ativo${allAlerts.length !== 1 ? 's' : ''}`
+    : ', sem alertas'
+  const revisadoLabel = child.revisado ? ', revisado' : ''
+
   return (
-    <Link href={`/dashboard/criancas/${child.id}`}>
+    <Link
+      href={`/dashboard/criancas/${child.id}`}
+      aria-label={`Ver detalhes de ${child.nome}, ${age} ${age === 1 ? 'ano' : 'anos'}, ${child.bairro}${statusLabel}${revisadoLabel}`}
+    >
       <Card
         className={cn(
           'hover:shadow-md transition-all duration-200 cursor-pointer group py-0 gap-0',
@@ -36,11 +44,11 @@ export function ChildCard({ child }: ChildCardProps) {
               <h3 className="font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
                 {child.nome}
               </h3>
-              <p className="text-xs text-gray-500 mt-0.5">
+              <p className="text-xs text-gray-600 mt-0.5">
                 {age} {age === 1 ? 'ano' : 'anos'} · {child.bairro}
               </p>
             </div>
-            <div className="flex items-center gap-1 ml-2">
+            <div className="flex items-center gap-1 ml-2" aria-hidden="true">
               {child.revisado && (
                 <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
               )}
@@ -50,7 +58,7 @@ export function ChildCard({ child }: ChildCardProps) {
             </div>
           </div>
 
-          <div className="flex gap-2 mb-3">
+          <div className="flex gap-2 mb-3" aria-hidden="true">
             <AreaIndicator
               icon={Heart}
               label="Saúde"
@@ -72,16 +80,16 @@ export function ChildCard({ child }: ChildCardProps) {
           </div>
 
           {allAlerts.length > 0 ? (
-            <div className="flex flex-wrap gap-1">
+            <div className="flex flex-wrap gap-1" aria-hidden="true">
               {displayAlerts.map((alert) => (
                 <AlertBadge key={alert} alert={alert} />
               ))}
               {extraAlerts > 0 && (
-                <span className="text-xs text-gray-500 self-center">+{extraAlerts} mais</span>
+                <span className="text-xs text-gray-600 self-center">+{extraAlerts} mais</span>
               )}
             </div>
           ) : (
-            <p className="text-xs text-gray-400 italic">Sem alertas ativos</p>
+            <p className="text-xs text-gray-600 italic" aria-hidden="true">Sem alertas ativos</p>
           )}
         </CardContent>
       </Card>
@@ -106,14 +114,13 @@ function AreaIndicator({
       className={cn(
         'h-auto rounded-full px-2 py-1 text-xs gap-1 border-transparent font-normal',
         !present
-          ? 'bg-gray-100 text-gray-400 hover:bg-gray-100'
+          ? 'bg-gray-100 text-gray-600 hover:bg-gray-100'
           : alert
             ? 'bg-red-100 text-red-600 hover:bg-red-100'
             : 'bg-green-100 text-green-600 hover:bg-green-100'
       )}
-      title={`${label}: ${!present ? 'sem dados' : alert ? 'com alertas' : 'ok'}`}
     >
-      <Icon className="w-3 h-3" />
+      <Icon className="w-3 h-3" aria-hidden="true" />
       <span>{label}</span>
     </Badge>
   )

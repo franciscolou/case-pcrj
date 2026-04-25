@@ -23,29 +23,33 @@ export function Navbar() {
     { href: '/dashboard/criancas', label: 'Crianças', icon: Users },
   ]
 
+  const isActive = (href: string) =>
+    pathname === href || (href !== '/dashboard' && pathname.startsWith(href))
+
   return (
-    <nav className="bg-blue-700 shadow-md">
+    <nav aria-label="Principal" className="bg-blue-700 shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-3">
-            <Shield className="w-6 h-6 text-white" />
+            <Shield className="w-6 h-6 text-white" aria-hidden="true" />
             <span className="text-white font-semibold text-sm sm:text-base">Painel PCRJ</span>
           </div>
 
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-1" role="list">
             {navLinks.map(({ href, label, icon: Icon }) => (
               <Link
                 key={href}
                 href={href}
+                role="listitem"
+                aria-current={isActive(href) ? 'page' : undefined}
                 className={cn(
                   'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
-                  pathname === href ||
-                    (href !== '/dashboard' && pathname.startsWith(href))
+                  isActive(href)
                     ? 'bg-blue-800 text-white'
                     : 'text-blue-100 hover:bg-blue-600 hover:text-white'
                 )}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className="w-4 h-4" aria-hidden="true" />
                 {label}
               </Link>
             ))}
@@ -53,7 +57,9 @@ export function Navbar() {
 
           <div className="hidden md:flex items-center gap-3">
             {user && (
-              <span className="text-blue-200 text-sm truncate max-w-[200px]">{user.email}</span>
+              <span className="text-blue-200 text-sm truncate max-w-[200px]" aria-label={`Usuário: ${user.email}`}>
+                {user.email}
+              </span>
             )}
             <Button
               variant="ghost"
@@ -61,7 +67,7 @@ export function Navbar() {
               onClick={handleLogout}
               className="text-blue-100 hover:text-white hover:bg-blue-600 gap-2"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-4 h-4" aria-hidden="true" />
               Sair
             </Button>
           </div>
@@ -71,46 +77,54 @@ export function Navbar() {
             size="icon"
             className="md:hidden text-white hover:bg-blue-600 hover:text-white"
             onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Menu"
+            aria-label={mobileOpen ? 'Fechar menu' : 'Abrir menu'}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-menu"
           >
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {mobileOpen
+              ? <X className="w-5 h-5" aria-hidden="true" />
+              : <Menu className="w-5 h-5" aria-hidden="true" />
+            }
           </Button>
         </div>
       </div>
 
-      {mobileOpen && (
-        <div className="md:hidden bg-blue-800 px-4 pb-4 space-y-1">
-          {navLinks.map(({ href, label, icon: Icon }) => (
-            <Link
-              key={href}
-              href={href}
-              onClick={() => setMobileOpen(false)}
-              className={cn(
-                'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium',
-                pathname === href ||
-                  (href !== '/dashboard' && pathname.startsWith(href))
-                  ? 'bg-blue-900 text-white'
-                  : 'text-blue-100 hover:bg-blue-700 hover:text-white'
-              )}
-            >
-              <Icon className="w-4 h-4" />
-              {label}
-            </Link>
-          ))}
-          {user && (
-            <p className="text-blue-300 text-xs px-3 pt-2 truncate">{user.email}</p>
-          )}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleLogout}
-            className="text-blue-100 hover:text-white hover:bg-blue-700 gap-2 w-full justify-start px-3"
+      <div
+        id="mobile-menu"
+        className={cn('md:hidden bg-blue-800 px-4 pb-4 space-y-1', !mobileOpen && 'hidden')}
+      >
+        {navLinks.map(({ href, label, icon: Icon }) => (
+          <Link
+            key={href}
+            href={href}
+            onClick={() => setMobileOpen(false)}
+            aria-current={isActive(href) ? 'page' : undefined}
+            className={cn(
+              'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium',
+              isActive(href)
+                ? 'bg-blue-900 text-white'
+                : 'text-blue-100 hover:bg-blue-700 hover:text-white'
+            )}
           >
-            <LogOut className="w-4 h-4" />
-            Sair
-          </Button>
-        </div>
-      )}
+            <Icon className="w-4 h-4" aria-hidden="true" />
+            {label}
+          </Link>
+        ))}
+        {user && (
+          <p className="text-blue-300 text-xs px-3 pt-2 truncate" aria-hidden="true">
+            {user.email}
+          </p>
+        )}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleLogout}
+          className="text-blue-100 hover:text-white hover:bg-blue-700 gap-2 w-full justify-start px-3"
+        >
+          <LogOut className="w-4 h-4" aria-hidden="true" />
+          Sair
+        </Button>
+      </div>
     </nav>
   )
 }

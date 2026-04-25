@@ -40,7 +40,10 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-800 to-blue-950 px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 rounded-2xl mb-4">
+          <div
+            className="inline-flex items-center justify-center w-16 h-16 bg-white/10 rounded-2xl mb-4"
+            aria-hidden="true"
+          >
             <ShieldCheck className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-white text-2xl font-bold">Prefeitura do Rio</h1>
@@ -48,9 +51,16 @@ export default function LoginPage() {
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-8">
-          <h2 className="text-gray-800 text-xl font-semibold mb-6">Entrar</h2>
+          <h2 className="text-gray-800 text-xl font-semibold mb-6" id="login-heading">
+            Entrar
+          </h2>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form
+            onSubmit={handleSubmit}
+            className="space-y-4"
+            aria-labelledby="login-heading"
+            noValidate
+          >
             <div className="space-y-1.5">
               <Label htmlFor="email" className="text-gray-700">
                 E-mail
@@ -64,6 +74,7 @@ export default function LoginPage() {
                 required
                 autoComplete="email"
                 className="h-10"
+                aria-required="true"
               />
             </div>
 
@@ -80,12 +91,13 @@ export default function LoginPage() {
                 required
                 autoComplete="current-password"
                 className="h-10"
+                aria-required="true"
               />
             </div>
 
             {error && (
               <Alert variant="destructive" className="bg-red-50 border-red-200 py-2">
-                <AlertCircle className="h-4 w-4 text-red-600" />
+                <AlertCircle className="h-4 w-4 text-red-600" aria-hidden="true" />
                 <AlertDescription className="text-red-700">{error}</AlertDescription>
               </Alert>
             )}
@@ -93,10 +105,14 @@ export default function LoginPage() {
             <Button
               type="submit"
               disabled={loading}
+              aria-busy={loading}
               className="w-full h-10 gap-2"
             >
               {loading && (
-                <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span
+                  className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"
+                  aria-hidden="true"
+                />
               )}
               {loading ? 'Entrando...' : 'Entrar'}
             </Button>
