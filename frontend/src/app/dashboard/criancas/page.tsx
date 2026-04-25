@@ -6,6 +6,18 @@ import { useChildren } from '@/hooks/useChildren'
 import { ChildCard } from '@/components/ChildCard'
 import { ChildFilters } from '@/types'
 import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { AlertTriangle } from 'lucide-react'
 
 const BAIRROS = ['Rocinha', 'Maré', 'Jacarezinho', 'Complexo do Alemão', 'Mangueira']
 
@@ -58,114 +70,119 @@ function ChildrenList() {
         </p>
       </div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
-        <div className="flex items-center gap-2 mb-3">
-          <SlidersHorizontal className="w-4 h-4 text-gray-500" />
-          <span className="text-sm font-medium text-gray-700">Filtros</span>
-          {hasFilters && (
-            <button
-              onClick={() => router.replace(pathname)}
-              className="ml-auto text-xs text-blue-600 hover:underline"
+      <Card className="mb-6 py-0 gap-0">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <SlidersHorizontal className="w-4 h-4 text-gray-500" />
+            <span className="text-sm font-medium text-gray-700">Filtros</span>
+            {hasFilters && (
+              <Button
+                variant="link"
+                size="sm"
+                onClick={() => router.replace(pathname)}
+                className="ml-auto h-auto p-0 text-xs text-blue-600"
+              >
+                Limpar filtros
+              </Button>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Select
+              value={bairro || 'all'}
+              onValueChange={(val) =>
+                updateParams({ bairro: !val || val === 'all' ? '' : val })
+              }
             >
-              Limpar filtros
-            </button>
-          )}
-        </div>
-        <div className="flex flex-wrap gap-3">
-          {/* Bairro filter */}
-          <select
-            value={bairro}
-            onChange={(e) => updateParams({ bairro: e.target.value })}
-            className="text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">Todos os bairros</option>
-            {BAIRROS.map((b) => (
-              <option key={b} value={b}>
-                {b}
-              </option>
-            ))}
-          </select>
+              <SelectTrigger className="w-auto text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os bairros</SelectItem>
+                {BAIRROS.map((b) => (
+                  <SelectItem key={b} value={b}>
+                    {b}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-          {/* Alerts filter */}
-          <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
-            {(
-              [
-                ['', 'Todos'],
-                ['true', 'Com alertas'],
-                ['false', 'Sem alertas'],
-              ] as const
-            ).map(([val, label]) => (
-              <button
-                key={val}
-                onClick={() => updateParams({ alertas: val })}
-                className={cn(
-                  'px-3 py-1.5 rounded-md text-xs font-medium transition-colors',
-                  alertas === val
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                )}
-              >
-                {label}
-              </button>
-            ))}
+            <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
+              {(
+                [
+                  ['', 'Todos'],
+                  ['true', 'Com alertas'],
+                  ['false', 'Sem alertas'],
+                ] as const
+              ).map(([val, label]) => (
+                <button
+                  key={val}
+                  onClick={() => updateParams({ alertas: val })}
+                  className={cn(
+                    'px-3 py-1.5 rounded-md text-xs font-medium transition-colors',
+                    alertas === val
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  )}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
+              {(
+                [
+                  ['', 'Todos'],
+                  ['false', 'Pendentes'],
+                  ['true', 'Revisados'],
+                ] as const
+              ).map(([val, label]) => (
+                <button
+                  key={val}
+                  onClick={() => updateParams({ revisado: val })}
+                  className={cn(
+                    'px-3 py-1.5 rounded-md text-xs font-medium transition-colors',
+                    revisado === val
+                      ? 'bg-white text-gray-900 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  )}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
+        </CardContent>
+      </Card>
 
-          {/* Review filter */}
-          <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
-            {(
-              [
-                ['', 'Todos'],
-                ['false', 'Pendentes'],
-                ['true', 'Revisados'],
-              ] as const
-            ).map(([val, label]) => (
-              <button
-                key={val}
-                onClick={() => updateParams({ revisado: val })}
-                className={cn(
-                  'px-3 py-1.5 rounded-md text-xs font-medium transition-colors',
-                  revisado === val
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                )}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Error state */}
       {isError && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-700 mb-6">
-          Erro ao carregar crianças. Tente novamente.
-        </div>
+        <Alert variant="destructive" className="mb-6 bg-red-50 border-red-200 py-3">
+          <AlertTriangle className="h-4 w-4 text-red-600" />
+          <AlertDescription className="text-red-700">
+            Erro ao carregar crianças. Tente novamente.
+          </AlertDescription>
+        </Alert>
       )}
 
-      {/* Loading skeletons */}
       {isLoading && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div
-              key={i}
-              className="bg-white rounded-xl border border-gray-100 p-4 animate-pulse"
-            >
-              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
-              <div className="h-3 bg-gray-200 rounded w-1/2 mb-4" />
-              <div className="flex gap-2 mb-3">
-                <div className="h-6 bg-gray-200 rounded-full w-16" />
-                <div className="h-6 bg-gray-200 rounded-full w-16" />
-                <div className="h-6 bg-gray-200 rounded-full w-16" />
-              </div>
-              <div className="h-3 bg-gray-200 rounded w-full" />
-            </div>
+            <Card key={i} className="py-0 gap-0">
+              <CardContent className="p-4">
+                <Skeleton className="h-4 w-3/4 mb-2" />
+                <Skeleton className="h-3 w-1/2 mb-4" />
+                <div className="flex gap-2 mb-3">
+                  <Skeleton className="h-6 w-16 rounded-full" />
+                  <Skeleton className="h-6 w-16 rounded-full" />
+                  <Skeleton className="h-6 w-16 rounded-full" />
+                </div>
+                <Skeleton className="h-3 w-full" />
+              </CardContent>
+            </Card>
           ))}
         </div>
       )}
 
-      {/* Empty state */}
       {!isLoading && data && data.data.length === 0 && (
         <div className="text-center py-16">
           <Search className="w-12 h-12 text-gray-300 mx-auto mb-4" />
@@ -174,7 +191,6 @@ function ChildrenList() {
         </div>
       )}
 
-      {/* Children grid */}
       {!isLoading && data && data.data.length > 0 && (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
@@ -183,26 +199,27 @@ function ChildrenList() {
             ))}
           </div>
 
-          {/* Pagination */}
           {data.pagination.totalPages > 1 && (
             <div className="flex items-center justify-center gap-2">
-              <button
+              <Button
+                variant="outline"
+                size="icon"
                 onClick={() => setPage(page - 1)}
                 disabled={page === 1}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-40 hover:bg-gray-50 transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" />
-              </button>
+              </Button>
               <span className="text-sm text-gray-600">
                 Página {page} de {data.pagination.totalPages}
               </span>
-              <button
+              <Button
+                variant="outline"
+                size="icon"
                 onClick={() => setPage(page + 1)}
                 disabled={page === data.pagination.totalPages}
-                className="p-2 rounded-lg border border-gray-200 disabled:opacity-40 hover:bg-gray-50 transition-colors"
               >
                 <ChevronRight className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
           )}
         </>

@@ -3,7 +3,11 @@ import { useState, useEffect, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
 import { setAuth, isAuthenticated } from '@/lib/auth'
-import { ShieldCheck } from 'lucide-react'
+import { ShieldCheck, AlertCircle } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -47,53 +51,55 @@ export default function LoginPage() {
           <h2 className="text-gray-800 text-xl font-semibold mb-6">Entrar</h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-gray-700">
                 E-mail
-              </label>
-              <input
+              </Label>
+              <Input
                 id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="tecnico@prefeitura.rio"
                 required
                 autoComplete="email"
+                className="h-10"
               />
             </div>
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+
+            <div className="space-y-1.5">
+              <Label htmlFor="password" className="text-gray-700">
                 Senha
-              </label>
-              <input
+              </Label>
+              <Input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="••••••••"
                 required
                 autoComplete="current-password"
+                className="h-10"
               />
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2 text-sm text-red-700">
-                {error}
-              </div>
+              <Alert variant="destructive" className="bg-red-50 border-red-200 py-2">
+                <AlertCircle className="h-4 w-4 text-red-600" />
+                <AlertDescription className="text-red-700">{error}</AlertDescription>
+              </Alert>
             )}
 
-            <button
+            <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-medium py-2.5 rounded-lg text-sm transition-colors flex items-center justify-center gap-2"
+              className="w-full h-10 gap-2"
             >
               {loading && (
                 <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               )}
               {loading ? 'Entrando...' : 'Entrar'}
-            </button>
+            </Button>
           </form>
         </div>
 

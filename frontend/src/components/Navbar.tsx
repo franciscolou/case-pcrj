@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { Shield, Users, LayoutDashboard, LogOut, Menu, X } from 'lucide-react'
 import { clearAuth, getUser } from '@/lib/auth'
 import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -26,13 +27,11 @@ export function Navbar() {
     <nav className="bg-blue-700 shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
           <div className="flex items-center gap-3">
             <Shield className="w-6 h-6 text-white" />
             <span className="text-white font-semibold text-sm sm:text-base">Painel PCRJ</span>
           </div>
 
-          {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-1">
             {navLinks.map(({ href, label, icon: Icon }) => (
               <Link
@@ -52,32 +51,33 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* User + logout */}
           <div className="hidden md:flex items-center gap-3">
             {user && (
               <span className="text-blue-200 text-sm truncate max-w-[200px]">{user.email}</span>
             )}
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={handleLogout}
-              className="flex items-center gap-2 text-blue-100 hover:text-white hover:bg-blue-600 px-3 py-2 rounded-lg text-sm transition-colors"
+              className="text-blue-100 hover:text-white hover:bg-blue-600 gap-2"
             >
               <LogOut className="w-4 h-4" />
               Sair
-            </button>
+            </Button>
           </div>
 
-          {/* Mobile menu button */}
-          <button
-            className="md:hidden text-white p-2"
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden text-white hover:bg-blue-600 hover:text-white"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Menu"
           >
             {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+          </Button>
         </div>
       </div>
 
-      {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden bg-blue-800 px-4 pb-4 space-y-1">
           {navLinks.map(({ href, label, icon: Icon }) => (
@@ -100,13 +100,15 @@ export function Navbar() {
           {user && (
             <p className="text-blue-300 text-xs px-3 pt-2 truncate">{user.email}</p>
           )}
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={handleLogout}
-            className="flex items-center gap-2 text-blue-100 hover:text-white w-full px-3 py-2 rounded-lg text-sm"
+            className="text-blue-100 hover:text-white hover:bg-blue-700 gap-2 w-full justify-start px-3"
           >
             <LogOut className="w-4 h-4" />
             Sair
-          </button>
+          </Button>
         </div>
       )}
     </nav>

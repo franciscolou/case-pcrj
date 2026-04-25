@@ -15,8 +15,13 @@ import {
 import { useChild } from '@/hooks/useChild'
 import { useReview } from '@/hooks/useReview'
 import { AlertBadge } from '@/components/AlertBadge'
-import { calcAge, formatDate, formatDateTime } from '@/lib/utils'
-import { cn } from '@/lib/utils'
+import { calcAge, formatDate, formatDateTime, cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Separator } from '@/components/ui/separator'
 
 function AreaCard({
   title,
@@ -34,53 +39,65 @@ function AreaCard({
   color: string
 }) {
   return (
-    <div
+    <Card
       className={cn(
-        'bg-white rounded-xl border shadow-sm',
-        alertCount > 0 ? 'border-red-200' : 'border-gray-100'
+        'py-0 gap-0',
+        alertCount > 0 ? 'ring-red-200' : ''
       )}
     >
-      <div
+      <CardHeader
         className={cn(
-          'px-5 py-4 flex items-center gap-3 rounded-t-xl border-b',
+          'flex flex-row items-center gap-3 px-5 py-4 rounded-t-xl border-b',
           alertCount > 0
             ? 'border-red-100 bg-red-50'
             : 'border-gray-100 bg-gray-50'
         )}
       >
-        <div className={cn('p-1.5 rounded-lg', color)}>
+        <div className={cn('p-1.5 rounded-lg shrink-0', color)}>
           <Icon className="w-4 h-4" />
         </div>
-        <h3 className="font-semibold text-gray-800">{title}</h3>
+        <h3 className="font-semibold text-gray-800 text-sm">{title}</h3>
         {!hasData && (
-          <span className="ml-auto text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+          <Badge
+            variant="outline"
+            className="ml-auto text-xs text-gray-400 bg-gray-100 border-gray-200 hover:bg-gray-100"
+          >
             Sem dados
-          </span>
+          </Badge>
         )}
         {hasData && alertCount > 0 && (
-          <span className="ml-auto flex items-center gap-1 text-xs text-red-600 bg-red-100 px-2 py-0.5 rounded-full">
+          <Badge
+            variant="outline"
+            className="ml-auto text-xs text-red-600 bg-red-100 border-red-200 hover:bg-red-100 gap-1"
+          >
             <AlertTriangle className="w-3 h-3" />
             {alertCount} alerta{alertCount !== 1 ? 's' : ''}
-          </span>
+          </Badge>
         )}
         {hasData && alertCount === 0 && (
-          <span className="ml-auto flex items-center gap-1 text-xs text-green-600 bg-green-100 px-2 py-0.5 rounded-full">
+          <Badge
+            variant="outline"
+            className="ml-auto text-xs text-green-600 bg-green-100 border-green-200 hover:bg-green-100 gap-1"
+          >
             <CheckCircle className="w-3 h-3" />
             Ok
-          </span>
+          </Badge>
         )}
-      </div>
-      <div className="p-5">{children}</div>
-    </div>
+      </CardHeader>
+      <CardContent className="p-5">{children}</CardContent>
+    </Card>
   )
 }
 
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex justify-between items-start gap-4 py-2 border-b border-gray-50 last:border-0">
-      <span className="text-sm text-gray-500 shrink-0">{label}</span>
-      <span className="text-sm text-gray-900 text-right">{value}</span>
-    </div>
+    <>
+      <div className="flex justify-between items-start gap-4 py-2">
+        <span className="text-sm text-gray-500 shrink-0">{label}</span>
+        <span className="text-sm text-gray-900 text-right">{value}</span>
+      </div>
+      <Separator className="last:hidden" />
+    </>
   )
 }
 
@@ -93,18 +110,20 @@ export default function ChildDetailPage() {
   if (isLoading) {
     return (
       <div>
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-gray-500 hover:text-gray-700 mb-6 text-sm"
+          className="mb-6 text-gray-500 hover:text-gray-700 gap-2 px-0"
         >
           <ArrowLeft className="w-4 h-4" />
           Voltar
-        </button>
-        <div className="animate-pulse space-y-4">
-          <div className="bg-gray-200 h-32 rounded-xl" />
+        </Button>
+        <div className="space-y-4">
+          <Skeleton className="h-32 rounded-xl" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-gray-200 h-48 rounded-xl" />
+              <Skeleton key={i} className="h-48 rounded-xl" />
             ))}
           </div>
         </div>
@@ -115,18 +134,21 @@ export default function ChildDetailPage() {
   if (isError || !child) {
     return (
       <div>
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-gray-500 hover:text-gray-700 mb-6 text-sm"
+          className="mb-6 text-gray-500 hover:text-gray-700 gap-2 px-0"
         >
           <ArrowLeft className="w-4 h-4" />
           Voltar
-        </button>
-        <div className="text-center py-16">
-          <AlertTriangle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-          <h3 className="text-gray-700 font-medium">Criança não encontrada</h3>
-          <p className="text-gray-400 text-sm mt-1">Verifique o ID e tente novamente</p>
-        </div>
+        </Button>
+        <Alert variant="destructive" className="bg-red-50 border-red-200 mb-4">
+          <AlertTriangle className="h-4 w-4 text-red-600" />
+          <AlertDescription className="text-red-700">
+            Criança não encontrada. Verifique o ID e tente novamente.
+          </AlertDescription>
+        </Alert>
       </div>
     )
   }
@@ -141,93 +163,102 @@ export default function ChildDetailPage() {
 
   return (
     <div className="max-w-4xl">
-      {/* Back button */}
-      <button
+      <Button
+        variant="ghost"
+        size="sm"
         onClick={() => router.back()}
-        className="flex items-center gap-2 text-gray-500 hover:text-gray-700 mb-6 text-sm transition-colors"
+        className="mb-6 text-gray-500 hover:text-gray-700 gap-2 px-0"
       >
         <ArrowLeft className="w-4 h-4" />
         Voltar para a lista
-      </button>
+      </Button>
 
-      {/* Child header card */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">{child.nome}</h1>
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2">
-              <span className="flex items-center gap-1.5 text-sm text-gray-500">
-                <Calendar className="w-4 h-4" />
-                {formatDate(child.data_nascimento)} · {age} {age === 1 ? 'ano' : 'anos'}
-              </span>
-              <span className="flex items-center gap-1.5 text-sm text-gray-500">
-                <MapPin className="w-4 h-4" />
-                {child.bairro}
-              </span>
-              <span className="flex items-center gap-1.5 text-sm text-gray-500">
-                <User className="w-4 h-4" />
-                {child.responsavel}
-              </span>
+      <Card className="mb-6 py-0 gap-0">
+        <CardContent className="p-6">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">{child.nome}</h1>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2">
+                <span className="flex items-center gap-1.5 text-sm text-gray-500">
+                  <Calendar className="w-4 h-4" />
+                  {formatDate(child.data_nascimento)} · {age} {age === 1 ? 'ano' : 'anos'}
+                </span>
+                <span className="flex items-center gap-1.5 text-sm text-gray-500">
+                  <MapPin className="w-4 h-4" />
+                  {child.bairro}
+                </span>
+                <span className="flex items-center gap-1.5 text-sm text-gray-500">
+                  <User className="w-4 h-4" />
+                  {child.responsavel}
+                </span>
+              </div>
+            </div>
+
+            <div className="shrink-0">
+              {child.revisado ? (
+                <div className="flex flex-col items-end gap-1">
+                  <Badge
+                    variant="outline"
+                    className="bg-green-100 text-green-700 border-green-200 hover:bg-green-100 gap-2 h-auto px-3 py-1.5 text-sm"
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    Revisado
+                  </Badge>
+                  <span className="text-xs text-gray-400">
+                    por {child.revisado_por} em {formatDateTime(child.revisado_em)}
+                  </span>
+                </div>
+              ) : (
+                <Button
+                  onClick={() => review()}
+                  disabled={isReviewing}
+                  className="gap-2"
+                >
+                  {isReviewing ? (
+                    <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <ClipboardCheck className="w-4 h-4" />
+                  )}
+                  {isReviewing ? 'Salvando...' : 'Marcar como revisado'}
+                </Button>
+              )}
             </div>
           </div>
 
-          {/* Review status / button */}
-          <div className="shrink-0">
-            {child.revisado ? (
-              <div className="flex flex-col items-end gap-1">
-                <span className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1.5 rounded-lg text-sm font-medium">
-                  <CheckCircle className="w-4 h-4" />
-                  Revisado
-                </span>
-                <span className="text-xs text-gray-400">
-                  por {child.revisado_por} em {formatDateTime(child.revisado_em)}
-                </span>
-              </div>
-            ) : (
-              <button
-                onClick={() => review()}
-                disabled={isReviewing}
-                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-              >
-                {isReviewing ? (
-                  <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <ClipboardCheck className="w-4 h-4" />
-                )}
-                {isReviewing ? 'Salvando...' : 'Marcar como revisado'}
-              </button>
-            )}
-          </div>
-        </div>
+          <Separator className="my-4" />
 
-        {/* Overall status */}
-        <div className="mt-4 pt-4 border-t border-gray-100">
           <div className="flex flex-wrap gap-2">
             {totalAlerts > 0 ? (
-              <span className="inline-flex items-center gap-1.5 text-sm text-red-600 bg-red-50 px-3 py-1 rounded-full border border-red-200">
+              <Badge
+                variant="outline"
+                className="text-sm text-red-600 bg-red-50 border-red-200 hover:bg-red-50 gap-1.5 h-auto px-3 py-1 rounded-full"
+              >
                 <AlertTriangle className="w-3.5 h-3.5" />
-                {totalAlerts} alerta{totalAlerts !== 1 ? 's' : ''} ativo
-                {totalAlerts !== 1 ? 's' : ''}
-              </span>
+                {totalAlerts} alerta{totalAlerts !== 1 ? 's' : ''} ativo{totalAlerts !== 1 ? 's' : ''}
+              </Badge>
             ) : (
-              <span className="inline-flex items-center gap-1.5 text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-200">
+              <Badge
+                variant="outline"
+                className="text-sm text-green-600 bg-green-50 border-green-200 hover:bg-green-50 gap-1.5 h-auto px-3 py-1 rounded-full"
+              >
                 <CheckCircle className="w-3.5 h-3.5" />
                 Sem alertas ativos
-              </span>
+              </Badge>
             )}
             {allNull && (
-              <span className="inline-flex items-center gap-1.5 text-sm text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+              <Badge
+                variant="outline"
+                className="text-sm text-amber-600 bg-amber-50 border-amber-200 hover:bg-amber-50 gap-1.5 h-auto px-3 py-1 rounded-full"
+              >
                 <AlertTriangle className="w-3.5 h-3.5" />
                 Nenhuma área com dados cadastrados
-              </span>
+              </Badge>
             )}
           </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
-      {/* Area cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Saúde */}
         <AreaCard
           title="Saúde"
           icon={Heart}
@@ -244,16 +275,17 @@ export default function ChildDetailPage() {
               <InfoRow
                 label="Vacinas"
                 value={
-                  <span
+                  <Badge
+                    variant="outline"
                     className={cn(
-                      'text-xs font-medium px-2 py-0.5 rounded-full',
+                      'text-xs h-auto px-2 py-0.5',
                       child.saude.vacinas_em_dia
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-red-100 text-red-700'
+                        ? 'bg-green-100 text-green-700 border-green-200 hover:bg-green-100'
+                        : 'bg-red-100 text-red-700 border-red-200 hover:bg-red-100'
                     )}
                   >
                     {child.saude.vacinas_em_dia ? 'Em dia' : 'Atrasadas'}
-                  </span>
+                  </Badge>
                 }
               />
               {child.saude.alertas.length > 0 && (
@@ -278,7 +310,6 @@ export default function ChildDetailPage() {
           )}
         </AreaCard>
 
-        {/* Educação */}
         <AreaCard
           title="Educação"
           icon={BookOpen}
@@ -297,7 +328,7 @@ export default function ChildDetailPage() {
                 }
               />
               {child.educacao.frequencia_percent !== null ? (
-                <div className="py-2 border-b border-gray-50">
+                <div className="py-2">
                   <div className="flex justify-between text-sm mb-1">
                     <span className="text-gray-500">Frequência</span>
                     <span
@@ -314,7 +345,7 @@ export default function ChildDetailPage() {
                   <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                     <div
                       className={cn(
-                        'h-full rounded-full',
+                        'h-full rounded-full transition-all',
                         child.educacao.frequencia_percent < 75
                           ? 'bg-red-500'
                           : 'bg-green-500'
@@ -326,9 +357,7 @@ export default function ChildDetailPage() {
               ) : (
                 <InfoRow
                   label="Frequência"
-                  value={
-                    <span className="text-amber-600 text-xs">Não matriculada</span>
-                  }
+                  value={<span className="text-amber-600 text-xs">Não matriculada</span>}
                 />
               )}
               {child.educacao.alertas.length > 0 && (
@@ -353,7 +382,6 @@ export default function ChildDetailPage() {
           )}
         </AreaCard>
 
-        {/* Assistência Social */}
         <AreaCard
           title="Assistência Social"
           icon={HeartHandshake}
@@ -366,33 +394,33 @@ export default function ChildDetailPage() {
               <InfoRow
                 label="CadÚnico"
                 value={
-                  <span
+                  <Badge
+                    variant="outline"
                     className={cn(
-                      'text-xs font-medium px-2 py-0.5 rounded-full',
+                      'text-xs h-auto px-2 py-0.5',
                       child.assistencia_social.cad_unico
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-red-100 text-red-700'
+                        ? 'bg-green-100 text-green-700 border-green-200 hover:bg-green-100'
+                        : 'bg-red-100 text-red-700 border-red-200 hover:bg-red-100'
                     )}
                   >
                     {child.assistencia_social.cad_unico ? 'Cadastrado' : 'Não cadastrado'}
-                  </span>
+                  </Badge>
                 }
               />
               <InfoRow
                 label="Benefício"
                 value={
-                  <span
+                  <Badge
+                    variant="outline"
                     className={cn(
-                      'text-xs font-medium px-2 py-0.5 rounded-full',
+                      'text-xs h-auto px-2 py-0.5',
                       child.assistencia_social.beneficio_ativo
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-red-100 text-red-700'
+                        ? 'bg-green-100 text-green-700 border-green-200 hover:bg-green-100'
+                        : 'bg-red-100 text-red-700 border-red-200 hover:bg-red-100'
                     )}
                   >
-                    {child.assistencia_social.beneficio_ativo
-                      ? 'Ativo'
-                      : 'Suspenso/Inativo'}
-                  </span>
+                    {child.assistencia_social.beneficio_ativo ? 'Ativo' : 'Suspenso/Inativo'}
+                  </Badge>
                 }
               />
               {child.assistencia_social.alertas.length > 0 && (

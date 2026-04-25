@@ -4,6 +4,8 @@ import { Child } from '@/types'
 import { calcAge, hasAnyAlert } from '@/lib/utils'
 import { AlertBadge } from './AlertBadge'
 import { cn } from '@/lib/utils'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 
 interface ChildCardProps {
   child: Child
@@ -22,68 +24,67 @@ export function ChildCard({ child }: ChildCardProps) {
 
   return (
     <Link href={`/dashboard/criancas/${child.id}`}>
-      <div
+      <Card
         className={cn(
-          'bg-white rounded-xl border shadow-sm hover:shadow-md transition-all duration-200 p-4 cursor-pointer group',
-          hasAlert ? 'border-red-200' : 'border-gray-100'
+          'hover:shadow-md transition-all duration-200 cursor-pointer group py-0 gap-0',
+          hasAlert ? 'ring-red-200' : ''
         )}
       >
-        {/* Header */}
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
-              {child.nome}
-            </h3>
-            <p className="text-xs text-gray-500 mt-0.5">
-              {age} {age === 1 ? 'ano' : 'anos'} · {child.bairro}
-            </p>
+        <CardContent className="p-4">
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
+                {child.nome}
+              </h3>
+              <p className="text-xs text-gray-500 mt-0.5">
+                {age} {age === 1 ? 'ano' : 'anos'} · {child.bairro}
+              </p>
+            </div>
+            <div className="flex items-center gap-1 ml-2">
+              {child.revisado && (
+                <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+              )}
+              {hasAlert && !child.revisado && (
+                <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" />
+              )}
+            </div>
           </div>
-          <div className="flex items-center gap-1 ml-2">
-            {child.revisado && (
-              <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-            )}
-            {hasAlert && !child.revisado && (
-              <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" />
-            )}
-          </div>
-        </div>
 
-        {/* Area presence */}
-        <div className="flex gap-2 mb-3">
-          <AreaIndicator
-            icon={Heart}
-            label="Saúde"
-            present={child.saude !== null}
-            alert={(child.saude?.alertas?.length ?? 0) > 0}
-          />
-          <AreaIndicator
-            icon={BookOpen}
-            label="Educação"
-            present={child.educacao !== null}
-            alert={(child.educacao?.alertas?.length ?? 0) > 0}
-          />
-          <AreaIndicator
-            icon={HeartHandshake}
-            label="Social"
-            present={child.assistencia_social !== null}
-            alert={(child.assistencia_social?.alertas?.length ?? 0) > 0}
-          />
-        </div>
-
-        {/* Alert badges */}
-        {allAlerts.length > 0 ? (
-          <div className="flex flex-wrap gap-1">
-            {displayAlerts.map((alert) => (
-              <AlertBadge key={alert} alert={alert} />
-            ))}
-            {extraAlerts > 0 && (
-              <span className="text-xs text-gray-500 self-center">+{extraAlerts} mais</span>
-            )}
+          <div className="flex gap-2 mb-3">
+            <AreaIndicator
+              icon={Heart}
+              label="Saúde"
+              present={child.saude !== null}
+              alert={(child.saude?.alertas?.length ?? 0) > 0}
+            />
+            <AreaIndicator
+              icon={BookOpen}
+              label="Educação"
+              present={child.educacao !== null}
+              alert={(child.educacao?.alertas?.length ?? 0) > 0}
+            />
+            <AreaIndicator
+              icon={HeartHandshake}
+              label="Social"
+              present={child.assistencia_social !== null}
+              alert={(child.assistencia_social?.alertas?.length ?? 0) > 0}
+            />
           </div>
-        ) : (
-          <p className="text-xs text-gray-400 italic">Sem alertas ativos</p>
-        )}
-      </div>
+
+          {allAlerts.length > 0 ? (
+            <div className="flex flex-wrap gap-1">
+              {displayAlerts.map((alert) => (
+                <AlertBadge key={alert} alert={alert} />
+              ))}
+              {extraAlerts > 0 && (
+                <span className="text-xs text-gray-500 self-center">+{extraAlerts} mais</span>
+              )}
+            </div>
+          ) : (
+            <p className="text-xs text-gray-400 italic">Sem alertas ativos</p>
+          )}
+        </CardContent>
+      </Card>
     </Link>
   )
 }
@@ -100,19 +101,20 @@ function AreaIndicator({
   alert: boolean
 }) {
   return (
-    <div
+    <Badge
+      variant="outline"
       className={cn(
-        'flex items-center gap-1 px-2 py-1 rounded-full text-xs',
+        'h-auto rounded-full px-2 py-1 text-xs gap-1 border-transparent font-normal',
         !present
-          ? 'bg-gray-100 text-gray-400'
+          ? 'bg-gray-100 text-gray-400 hover:bg-gray-100'
           : alert
-            ? 'bg-red-100 text-red-600'
-            : 'bg-green-100 text-green-600'
+            ? 'bg-red-100 text-red-600 hover:bg-red-100'
+            : 'bg-green-100 text-green-600 hover:bg-green-100'
       )}
       title={`${label}: ${!present ? 'sem dados' : alert ? 'com alertas' : 'ok'}`}
     >
       <Icon className="w-3 h-3" />
       <span>{label}</span>
-    </div>
+    </Badge>
   )
 }
