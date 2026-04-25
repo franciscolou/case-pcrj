@@ -1,4 +1,5 @@
 'use client'
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import {
   Users,
@@ -13,7 +14,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Skeleton } from '@/components/ui/skeleton'
 import { buttonVariants } from '@/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
+import { ChartsTab } from '@/components/ChartsTab'
+
+// Leaflet requires browser APIs — load map client-side only
+const MapTab = dynamic(() => import('@/components/MapTab').then((m) => m.MapTab), {
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center h-96 text-gray-600 text-sm" role="status">
+      <span
+        className="h-6 w-6 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mr-2"
+        aria-hidden="true"
+      />
+      Carregando mapa...
+    </div>
+  ),
+})
 
 function SummaryCard({
   icon: Icon,
@@ -41,6 +58,105 @@ function SummaryCard({
         {sub && <div className="text-xs text-gray-600 mt-1">{sub}</div>}
       </CardContent>
     </Card>
+  )
+}
+
+function GeralTab({ data }: { data: NonNullable<ReturnType<typeof useSummary>['data']> }) {
+  return (
+    <>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-semibold text-gray-800 flex items-center gap-2">
+              <Activity className="w-4 h-4 text-blue-600" aria-hidden="true" />
+              Alertas por Área
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {[
+              { label: 'Saúde', value: data.com_alertas.saude, color: 'bg-red-500', total: data.total },
+              { label: 'Educação', value: data.com_alertas.educacao, color: 'bg-yellow-500', total: data.total },
+              { label: 'Assistência Social', value: data.com_alertas.assistencia_social, color: 'bg-orange-500', total: data.total },
+            ].map(({ label, value, color, total }) => (
+              <div key={label}>
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-gray-700">{label}</span>
+                  <span className="font-medium text-gray-900">{value}</span>
+                </div>
+                <div
+                  role="progressbar"
+                  aria-label={`${label}: ${value} de ${total} crianças com alertas`}
+                  aria-valuenow={value}
+                  aria-valuemin={0}
+                  aria-valuemax={total}
+                  className="h-2 bg-gray-200 rounded-full overflow-hidden"
+                >
+                  <div
+                    className={cn('h-full rounded-full transition-all duration-500', color)}
+                    style={{ width: `${(value / total) * 100}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-semibold text-gray-800 flex items-center gap-2">
+              <Users className="w-4 h-4 text-blue-600" aria-hidden="true" />
+              Por Bairro
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {Object.entries(data.por_bairro)
+              .sort((a, b) => b[1].total - a[1].total)
+              .map(([bairro, stats]) => (
+                <div key={bairro} className="flex items-center gap-3 text-sm">
+                  <span className="text-gray-700 flex-1 truncate">{bairro}</span>
+                  <span className="text-gray-900 font-medium w-6 text-right">
+                    {stats.total}
+                  </span>
+                  <div
+                    role="progressbar"
+                    aria-label={`${bairro}: ${stats.total} crianças`}
+                    aria-valuenow={stats.total}
+                    aria-valuemin={0}
+                    aria-valuemax={data.total}
+                    className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden"
+                  >
+                    <div
+                      className="h-full bg-blue-500 rounded-full"
+                      style={{ width: `${(stats.total / data.total) * 100}%` }}
+                    />
+                  </div>
+                  {stats.com_alertas > 0 && (
+                    <span className="text-red-600 text-xs font-medium w-16 text-right">
+                      {stats.com_alertas} alertas
+                    </span>
+                  )}
+                </div>
+              ))}
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 flex items-center justify-between">
+        <div>
+          <h2 className="font-semibold text-blue-900">Lista de Crianças</h2>
+          <p className="text-blue-700 text-sm mt-1">
+            Ver todas as crianças com filtros e detalhes
+          </p>
+        </div>
+        <Link
+          href="/dashboard/criancas"
+          className={cn(buttonVariants({ size: 'default' }), 'gap-2')}
+        >
+          Ver lista
+          <ArrowRight className="w-4 h-4" aria-hidden="true" />
+        </Link>
+      </div>
+    </>
   )
 }
 
@@ -103,100 +219,34 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {data && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base font-semibold text-gray-800 flex items-center gap-2">
-                <Activity className="w-4 h-4 text-blue-600" aria-hidden="true" />
-                Alertas por Área
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {[
-                { label: 'Saúde', value: data.com_alertas.saude, color: 'bg-red-500', total: data.total },
-                { label: 'Educação', value: data.com_alertas.educacao, color: 'bg-yellow-500', total: data.total },
-                { label: 'Assistência Social', value: data.com_alertas.assistencia_social, color: 'bg-orange-500', total: data.total },
-              ].map(({ label, value, color, total }) => (
-                <div key={label}>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-700">{label}</span>
-                    <span className="font-medium text-gray-900">{value}</span>
-                  </div>
-                  <div
-                    role="progressbar"
-                    aria-label={`${label}: ${value} de ${total} crianças com alertas`}
-                    aria-valuenow={value}
-                    aria-valuemin={0}
-                    aria-valuemax={total}
-                    className="h-2 bg-gray-200 rounded-full overflow-hidden"
-                  >
-                    <div
-                      className={cn('h-full rounded-full transition-all duration-500', color)}
-                      style={{ width: `${(value / total) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base font-semibold text-gray-800 flex items-center gap-2">
-                <Users className="w-4 h-4 text-blue-600" aria-hidden="true" />
-                Por Bairro
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {Object.entries(data.por_bairro)
-                .sort((a, b) => b[1].total - a[1].total)
-                .map(([bairro, stats]) => (
-                  <div key={bairro} className="flex items-center gap-3 text-sm">
-                    <span className="text-gray-700 flex-1 truncate">{bairro}</span>
-                    <span className="text-gray-900 font-medium w-6 text-right">
-                      {stats.total}
-                    </span>
-                    <div
-                      role="progressbar"
-                      aria-label={`${bairro}: ${stats.total} crianças`}
-                      aria-valuenow={stats.total}
-                      aria-valuemin={0}
-                      aria-valuemax={data.total}
-                      className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden"
-                    >
-                      <div
-                        className="h-full bg-blue-500 rounded-full"
-                        style={{ width: `${(stats.total / data.total) * 100}%` }}
-                      />
-                    </div>
-                    {stats.com_alertas > 0 && (
-                      <span className="text-red-600 text-xs font-medium w-16 text-right">
-                        {stats.com_alertas} alertas
-                      </span>
-                    )}
-                  </div>
-                ))}
-            </CardContent>
-          </Card>
+      {isLoading && (
+        <div className="space-y-4">
+          <Skeleton className="h-10 w-72 rounded-lg" aria-hidden="true" />
+          <Skeleton className="h-64 rounded-xl" aria-hidden="true" />
         </div>
       )}
 
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-5 flex items-center justify-between">
-        <div>
-          <h2 className="font-semibold text-blue-900">Lista de Crianças</h2>
-          <p className="text-blue-700 text-sm mt-1">
-            Ver todas as crianças com filtros e detalhes
-          </p>
-        </div>
-        <Link
-          href="/dashboard/criancas"
-          className={cn(buttonVariants({ size: 'default' }), 'gap-2')}
-        >
-          Ver lista
-          <ArrowRight className="w-4 h-4" aria-hidden="true" />
-        </Link>
-      </div>
+      {data && (
+        <Tabs defaultValue="geral">
+          <TabsList className="mb-6" aria-label="Seções do dashboard">
+            <TabsTrigger value="geral">Geral</TabsTrigger>
+            <TabsTrigger value="graficos">Gráficos</TabsTrigger>
+            <TabsTrigger value="mapa">Mapa</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="geral">
+            <GeralTab data={data} />
+          </TabsContent>
+
+          <TabsContent value="graficos">
+            <ChartsTab data={data} />
+          </TabsContent>
+
+          <TabsContent value="mapa">
+            <MapTab data={data} />
+          </TabsContent>
+        </Tabs>
+      )}
     </div>
   )
 }
