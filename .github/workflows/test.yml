@@ -51,7 +51,8 @@ jobs:
         working-directory: backend
         run: |
           npm ci
-          npm run dev &
+          npm run build
+          node dist/server.js &
         env:
           PORT: 3001
           HOST: 0.0.0.0
@@ -70,8 +71,13 @@ jobs:
         run: npx playwright install --with-deps chromium
         working-directory: frontend
       - name: Wait for backend to be ready
-        run: npx wait-on http://localhost:3001/health --timeout 30000
-        working-directory: frontend
+        run: |
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:3001/health && echo "Backend ready" && exit 0
+            echo "Waiting... ($i/30)"
+            sleep 1
+          done
+          echo "Backend did not start in time" && exit 1
       - name: Run E2E tests
         run: npm run test:e2e
         working-directory: frontend

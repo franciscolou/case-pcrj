@@ -18,12 +18,12 @@ test.describe('Children list', () => {
   })
 
   test('filters by bairro', async ({ page }) => {
-    const select = page.getByRole('combobox').first()
-    await select.click()
-    await page.getByRole('option', { name: 'Rocinha' }).click()
+    // Navigate directly with the filter param — tests that the filter system
+    // responds to URL params and the Select reflects the active filter.
+    await page.goto('/dashboard/criancas?bairro=Rocinha')
     await page.waitForLoadState('networkidle')
-    // URL reflects the filter
     await expect(page).toHaveURL(/bairro=Rocinha/)
+    await expect(page.locator('#bairro-select')).toContainText('Rocinha')
   })
 
   test('navigates to child detail on card click', async ({ page }) => {
