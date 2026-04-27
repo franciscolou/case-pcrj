@@ -16,10 +16,18 @@ const mockGetAll = vi.mocked(getAllChildren)
 
 describe('GET /summary', () => {
   let app: FastifyInstance
+  let authToken: string
 
   beforeAll(async () => {
     app = await buildApp()
     await app.ready()
+
+    const authRes = await app.inject({
+      method: 'POST',
+      url: '/auth/token',
+      payload: { email: 'tecnico@prefeitura.rio', password: 'painel@2024' },
+    })
+    authToken = authRes.json<{ token: string }>().token
   })
 
   afterAll(() => app.close())
@@ -30,56 +38,56 @@ describe('GET /summary', () => {
   })
 
   it('returns correct total count', async () => {
-    const res = await app.inject({ method: 'GET', url: '/summary' })
+    const res = await app.inject({ method: 'GET', url: '/summary', headers: { Authorization: `Bearer ${authToken}` } })
 
     expect(res.statusCode).toBe(200)
     expect(res.json().total).toBe(allTestChildren.length)
   })
 
   it('counts children with any alert (com_alertas.total)', async () => {
-    const res = await app.inject({ method: 'GET', url: '/summary' })
+    const res = await app.inject({ method: 'GET', url: '/summary', headers: { Authorization: `Bearer ${authToken}` } })
 
     // childWithAllAlerts and childWithSaudeAlertOnly have alerts
     expect(res.json().com_alertas.total).toBe(2)
   })
 
   it('counts children with saude alerts', async () => {
-    const res = await app.inject({ method: 'GET', url: '/summary' })
+    const res = await app.inject({ method: 'GET', url: '/summary', headers: { Authorization: `Bearer ${authToken}` } })
 
     // childWithAllAlerts (vacinas_atrasadas) and childWithSaudeAlertOnly (consulta_atrasada)
     expect(res.json().com_alertas.saude).toBe(2)
   })
 
   it('counts children with educacao alerts', async () => {
-    const res = await app.inject({ method: 'GET', url: '/summary' })
+    const res = await app.inject({ method: 'GET', url: '/summary', headers: { Authorization: `Bearer ${authToken}` } })
 
     // childWithAllAlerts (frequencia_baixa)
     expect(res.json().com_alertas.educacao).toBe(1)
   })
 
   it('counts children with assistencia_social alerts', async () => {
-    const res = await app.inject({ method: 'GET', url: '/summary' })
+    const res = await app.inject({ method: 'GET', url: '/summary', headers: { Authorization: `Bearer ${authToken}` } })
 
     // childWithAllAlerts (beneficio_suspenso)
     expect(res.json().com_alertas.assistencia_social).toBe(1)
   })
 
   it('counts revisadas children', async () => {
-    const res = await app.inject({ method: 'GET', url: '/summary' })
+    const res = await app.inject({ method: 'GET', url: '/summary', headers: { Authorization: `Bearer ${authToken}` } })
 
     // childReviewed
     expect(res.json().revisadas).toBe(1)
   })
 
   it('counts sem_dados children (all areas null)', async () => {
-    const res = await app.inject({ method: 'GET', url: '/summary' })
+    const res = await app.inject({ method: 'GET', url: '/summary', headers: { Authorization: `Bearer ${authToken}` } })
 
     // childWithNoData
     expect(res.json().sem_dados).toBe(1)
   })
 
   it('groups children correctly por_bairro', async () => {
-    const res = await app.inject({ method: 'GET', url: '/summary' })
+    const res = await app.inject({ method: 'GET', url: '/summary', headers: { Authorization: `Bearer ${authToken}` } })
 
     const porBairro = res.json().por_bairro
     expect(porBairro['Rocinha']).toEqual({ total: 1, com_alertas: 1 })
@@ -92,7 +100,7 @@ describe('GET /summary', () => {
   it('returns empty summary for empty database', async () => {
     mockGetAll.mockReturnValue([])
 
-    const res = await app.inject({ method: 'GET', url: '/summary' })
+    const res = await app.inject({ method: 'GET', url: '/summary', headers: { Authorization: `Bearer ${authToken}` } })
 
     const body = res.json()
     expect(body.total).toBe(0)

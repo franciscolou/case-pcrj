@@ -196,9 +196,9 @@ case-pcrj/
 | Método | Path | Auth | Descrição |
 |--------|------|------|-----------|
 | POST | `/auth/token` | - | Autentica e retorna JWT |
-| GET | `/children` | - | Lista com filtros e paginação |
-| GET | `/children/:id` | - | Detalhe completo |
-| GET | `/summary` | - | Dados agregados para o dashboard |
+| GET | `/children` | JWT | Lista com filtros e paginação |
+| GET | `/children/:id` | JWT | Detalhe completo |
+| GET | `/summary` | JWT | Dados agregados para o dashboard |
 | PATCH | `/children/:id/review` | JWT | Marca caso como revisado |
 | GET | `/health` | - | Health check |
 

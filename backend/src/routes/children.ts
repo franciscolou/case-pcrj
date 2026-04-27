@@ -10,7 +10,7 @@ function hasAlerts(child: Child): boolean {
 }
 
 const childrenRoutes: FastifyPluginAsync = async (fastify) => {
-  fastify.get('/children', async (request, reply) => {
+  fastify.get('/children', { preHandler: [fastify.authenticate] }, async (request, reply) => {
     const query = request.query as {
       bairro?: string
       alertas?: string
@@ -58,7 +58,7 @@ const childrenRoutes: FastifyPluginAsync = async (fastify) => {
     })
   })
 
-  fastify.get('/children/:id', async (request, reply) => {
+  fastify.get('/children/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
     const { id } = request.params as { id: string }
     const row = getChildById(id)
 

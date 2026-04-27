@@ -10,7 +10,7 @@ function hasAnyAlert(child: Child): boolean {
 }
 
 const summaryRoutes: FastifyPluginAsync = async (fastify) => {
-  fastify.get('/summary', async (_request, reply) => {
+  fastify.get('/summary', { preHandler: [fastify.authenticate] }, async (_request, reply) => {
     const rows = getAllChildren()
     const children: Child[] = rows.map(rowToChild)
 

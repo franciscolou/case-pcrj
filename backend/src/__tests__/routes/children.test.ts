@@ -24,10 +24,18 @@ const mockUpdateReview = vi.mocked(updateChildReview)
 
 describe('GET /children', () => {
   let app: FastifyInstance
+  let authToken: string
 
   beforeAll(async () => {
     app = await buildApp()
     await app.ready()
+
+    const authRes = await app.inject({
+      method: 'POST',
+      url: '/auth/token',
+      payload: { email: 'tecnico@prefeitura.rio', password: 'painel@2024' },
+    })
+    authToken = authRes.json<{ token: string }>().token
   })
 
   afterAll(() => app.close())
@@ -38,7 +46,7 @@ describe('GET /children', () => {
   })
 
   it('returns all children with default pagination', async () => {
-    const res = await app.inject({ method: 'GET', url: '/children' })
+    const res = await app.inject({ method: 'GET', url: '/children', headers: { Authorization: `Bearer ${authToken}` } })
 
     expect(res.statusCode).toBe(200)
     const body = res.json()
@@ -48,7 +56,7 @@ describe('GET /children', () => {
   })
 
   it('filters by bairro (case-insensitive)', async () => {
-    const res = await app.inject({ method: 'GET', url: '/children?bairro=rocinha' })
+    const res = await app.inject({ method: 'GET', url: '/children?bairro=rocinha', headers: { Authorization: `Bearer ${authToken}` } })
 
     const body = res.json()
     expect(body.data.every((c: { bairro: string }) => c.bairro.toLowerCase() === 'rocinha')).toBe(true)
@@ -56,7 +64,7 @@ describe('GET /children', () => {
   })
 
   it('filters children with alertas=true', async () => {
-    const res = await app.inject({ method: 'GET', url: '/children?alertas=true' })
+    const res = await app.inject({ method: 'GET', url: '/children?alertas=true', headers: { Authorization: `Bearer ${authToken}` } })
 
     const body = res.json()
     // childWithAllAlerts and childWithSaudeAlertOnly have alerts
@@ -66,7 +74,7 @@ describe('GET /children', () => {
   })
 
   it('filters children with alertas=false', async () => {
-    const res = await app.inject({ method: 'GET', url: '/children?alertas=false' })
+    const res = await app.inject({ method: 'GET', url: '/children?alertas=false', headers: { Authorization: `Bearer ${authToken}` } })
 
     const body = res.json()
     // childWithNoAlerts, childReviewed, childWithNoData have no alerts
@@ -77,7 +85,7 @@ describe('GET /children', () => {
   })
 
   it('filters children with revisado=true', async () => {
-    const res = await app.inject({ method: 'GET', url: '/children?revisado=true' })
+    const res = await app.inject({ method: 'GET', url: '/children?revisado=true', headers: { Authorization: `Bearer ${authToken}` } })
 
     const body = res.json()
     expect(body.pagination.total).toBe(1)
@@ -85,7 +93,7 @@ describe('GET /children', () => {
   })
 
   it('filters children with revisado=false', async () => {
-    const res = await app.inject({ method: 'GET', url: '/children?revisado=false' })
+    const res = await app.inject({ method: 'GET', url: '/children?revisado=false', headers: { Authorization: `Bearer ${authToken}` } })
 
     const body = res.json()
     expect(body.pagination.total).toBe(4)
@@ -94,7 +102,7 @@ describe('GET /children', () => {
   })
 
   it('paginates results correctly', async () => {
-    const res = await app.inject({ method: 'GET', url: '/children?page=2&limit=2' })
+    const res = await app.inject({ method: 'GET', url: '/children?page=2&limit=2', headers: { Authorization: `Bearer ${authToken}` } })
 
     const body = res.json()
     expect(body.data).toHaveLength(2)
@@ -104,14 +112,14 @@ describe('GET /children', () => {
   })
 
   it('caps limit at 50', async () => {
-    const res = await app.inject({ method: 'GET', url: '/children?limit=9999' })
+    const res = await app.inject({ method: 'GET', url: '/children?limit=9999', headers: { Authorization: `Bearer ${authToken}` } })
 
     const body = res.json()
     expect(body.pagination.limit).toBe(50)
   })
 
   it('returns empty data for out-of-range page', async () => {
-    const res = await app.inject({ method: 'GET', url: '/children?page=999' })
+    const res = await app.inject({ method: 'GET', url: '/children?page=999', headers: { Authorization: `Bearer ${authToken}` } })
 
     const body = res.json()
     expect(body.data).toHaveLength(0)
@@ -121,10 +129,18 @@ describe('GET /children', () => {
 
 describe('GET /children/:id', () => {
   let app: FastifyInstance
+  let authToken: string
 
   beforeAll(async () => {
     app = await buildApp()
     await app.ready()
+
+    const authRes = await app.inject({
+      method: 'POST',
+      url: '/auth/token',
+      payload: { email: 'tecnico@prefeitura.rio', password: 'painel@2024' },
+    })
+    authToken = authRes.json<{ token: string }>().token
   })
 
   afterAll(() => app.close())
@@ -134,7 +150,7 @@ describe('GET /children/:id', () => {
   it('returns child when found', async () => {
     mockGetById.mockReturnValue(childWithNoData as never)
 
-    const res = await app.inject({ method: 'GET', url: `/children/${childWithNoData.id}` })
+    const res = await app.inject({ method: 'GET', url: `/children/${childWithNoData.id}`, headers: { Authorization: `Bearer ${authToken}` } })
 
     expect(res.statusCode).toBe(200)
     expect(res.json().id).toBe(childWithNoData.id)
@@ -144,7 +160,7 @@ describe('GET /children/:id', () => {
   it('returns 404 when child does not exist', async () => {
     mockGetById.mockReturnValue(undefined)
 
-    const res = await app.inject({ method: 'GET', url: '/children/nonexistent-id' })
+    const res = await app.inject({ method: 'GET', url: '/children/nonexistent-id', headers: { Authorization: `Bearer ${authToken}` } })
 
     expect(res.statusCode).toBe(404)
     expect(res.json().error).toBe('Criança não encontrada')
