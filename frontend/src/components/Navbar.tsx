@@ -33,7 +33,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-3">
             <Shield className="w-6 h-6 text-nav-text" aria-hidden="true" />
-            <span className="text-nav-text font-semibold text-sm sm:text-base">Painel PCRJ</span>
+            <span className="text-nav-text font-semibold text-sm sm:text-base">Painel da Infância</span>
           </div>
 
           <div className="hidden md:flex items-center gap-1" role="list">

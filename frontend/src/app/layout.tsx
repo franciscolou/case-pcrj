@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
 export const metadata: Metadata = {
-  title: 'Painel PCRJ — Acompanhamento de Crianças',
+  title: 'Painel da Infância',
   description: 'Painel de monitoramento de crianças em situação de vulnerabilidade social',
 }
 

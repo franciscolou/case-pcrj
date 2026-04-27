@@ -47,7 +47,7 @@ export default function LoginPage() {
             <ShieldCheck className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-white text-2xl font-bold">Prefeitura do Rio</h1>
-          <p className="text-blue-200 text-sm mt-1">Painel de Acompanhamento Social</p>
+          <p className="text-blue-200 text-sm mt-1">Painel da Infância</p>
         </div>
 
         <div className="bg-card rounded-2xl shadow-xl p-8">
