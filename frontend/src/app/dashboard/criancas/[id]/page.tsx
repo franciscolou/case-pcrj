@@ -1,4 +1,5 @@
 'use client'
+import { useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import {
   ArrowLeft,
@@ -103,6 +104,12 @@ export default function ChildDetailPage() {
   const router = useRouter()
   const { data: child, isLoading, isError } = useChild(id)
   const { mutate: review, isPending: isReviewing } = useReview(id)
+
+  useEffect(() => {
+    document.title = child?.nome
+      ? `${child.nome} | Painel da Infância`
+      : 'Painel da Infância'
+  }, [child?.nome])
 
   if (isLoading) {
     return (

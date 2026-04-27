@@ -1,4 +1,5 @@
 'use client'
+import { useEffect } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { Suspense } from 'react'
 import { Search, SlidersHorizontal, ChevronLeft, ChevronRight } from 'lucide-react'
@@ -56,6 +57,10 @@ function ChildrenList() {
     params.set('page', String(p))
     router.replace(`${pathname}?${params.toString()}`)
   }
+
+  useEffect(() => {
+    document.title = 'Crianças | Painel da Infância'
+  }, [])
 
   const hasFilters = !!(bairro || alertas || revisado)
   const totalLabel = data

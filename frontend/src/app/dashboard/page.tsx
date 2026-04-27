@@ -1,4 +1,5 @@
 'use client'
+import { useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import {
@@ -161,6 +162,10 @@ function GeralTab({ data }: { data: NonNullable<ReturnType<typeof useSummary>['d
 
 export default function DashboardPage() {
   const { data, isLoading, isError } = useSummary()
+
+  useEffect(() => {
+    document.title = 'Dashboard | Painel da Infância'
+  }, [])
 
   return (
     <div>

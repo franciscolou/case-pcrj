@@ -17,6 +17,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
+    document.title = 'Login | Painel da Infância'
     if (isAuthenticated()) router.replace('/dashboard')
   }, [router])
 

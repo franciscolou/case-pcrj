@@ -7,8 +7,12 @@ import { cn } from '@/lib/utils'
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
 export const metadata: Metadata = {
-  title: 'Painel da Infância',
+  title: {
+    template: '%s | Painel da Infância',
+    default: 'Painel da Infância',
+  },
   description: 'Painel de monitoramento de crianças em situação de vulnerabilidade social',
+  icons: { icon: '/favicon.svg' },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
