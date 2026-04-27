@@ -93,13 +93,13 @@ function ChildrenList() {
                 Filtrar por bairro
               </label>
               <Select
-                value={bairro || 'all'}
+                value={bairro || null}
                 onValueChange={(val) =>
                   updateParams({ bairro: !val || val === 'all' ? '' : val })
                 }
               >
                 <SelectTrigger id="bairro-select" className="w-auto text-sm">
-                  <SelectValue />
+                  <SelectValue placeholder="Todos os bairros" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos os bairros</SelectItem>
